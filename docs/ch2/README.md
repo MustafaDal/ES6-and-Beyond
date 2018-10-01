@@ -38,7 +38,7 @@ console.log( a );		// 2
 
 Bu çok yaygın olmayan bir kullanım olmamakla birlikte, geçerli bir yöntemdir.
 
-`let` ile tanılmanan değişkene, tanımlma öncesinde erişmeye çalıştığımızda hata alırız ancak `var` ile yapılan tanımlada bunun önemi yoktur.
+`let` ile tanılmanan değişkene, tanımlama öncesinde erişmeye çalıştığımızda hata alırız ancak `var` ile yapılan tanımlada bunun önemi yoktur.
 
 Örneğin:
 
@@ -80,9 +80,9 @@ Son bir handikap ise: `typeof` TDZ içerisindeki `let` ile tanımlanan değişke
 
 #### `let` + `for`
 
-The only exception I'd make to the preference for the *explicit* form of `let` declaration blocking is a `let` that appears in the header of a `for` loop. The reason may seem nuanced, but I believe it to be one of the more important ES6 features.
+`for` içerisinde `let` ile yapılan tanımla ES6 içerisindeki önemli özelliklerden biri olarak düşünebiliriz.
 
-Consider:
+Örneğin:
 
 ```js
 var funcs = [];
@@ -96,34 +96,15 @@ for (let i = 0; i < 5; i++) {
 funcs[3]();		// 3
 ```
 
-The `let i` in the `for` header declares an `i` not just for the `for` loop itself, but it redeclares a new `i` for each iteration of the loop. That means that closures created inside the loop iteration close over those per-iteration variables the way you'd expect.
+`for` içerisindeki `let` tanımlaması, sadece `for` için değil her dönüş için tekrar tanımlanır.
 
-If you tried that same snippet but with `var i` in the `for` loop header, you'd get `5` instead of `3`, because there'd only be one `i` in the outer scope that was closed over, instead of a new `i` for each iteration's function to close over.
-
-You could also have accomplished the same thing slightly more verbosely:
-
-```js
-var funcs = [];
-
-for (var i = 0; i < 5; i++) {
-	let j = i;
-	funcs.push( function(){
-		console.log( j );
-	} );
-}
-
-funcs[3]();		// 3
-```
-
-Here, we forcibly create a new `j` for each iteration, and then the closure works the same way. I prefer the former approach; that extra special capability is why I endorse the `for (let .. ) ..` form. It could be argued it's somewhat more *implicit*, but it's *explicit* enough, and useful enough, for my tastes.
-
-`let` also works the same way with `for..in` and `for..of` loops (see "`for..of` Loops").
+Eğer yukarıdaki kodun aynısını `var i` ile denersek, sonucun `3` yerine `5` olduğunu görürüz, çünkü kapsam (scope) dışında sadece tek bir `i` vardır, her bir dönüş için yeni bir `i` oluşmamaktadır.
 
 ### `const` Declarations
 
-There's one other form of block-scoped declaration to consider: the `const`, which creates *constants*.
+Bir diğer block-scoped değişken tanımlamak için kullanılan yöntem ise: `const`, sabit (değişmez) değerleri tanımlamak için kullanılır.
 
-What exactly is a constant? It's a variable that's read-only after its initial value is set. Consider:
+Sabit yani; ilk değer ataması yapıldıksan sonra sadece değeri okuma amaçlı kullanılır. Tekrar değiştirilmez, örneğin:
 
 ```js
 {
@@ -134,9 +115,9 @@ What exactly is a constant? It's a variable that's read-only after its initial v
 }
 ```
 
-You are not allowed to change the value the variable holds once it's been set, at declaration time. A `const` declaration must have an explicit initialization. If you wanted a *constant* with the `undefined` value, you'd have to declare `const a = undefined` to get it.
+`const` ile tanımlanan değeri daha sonra değiştirmek istediğinizde yukarıdaki gibi hata alırsınız, `const` değerler değişmezdir.
 
-Constants are not a restriction on the value itself, but on the variable's assignment of that value. In other words, the value is not frozen or immutable because of `const`, just the assignment of it. If the value is complex, such as an object or array, the contents of the value can still be modified:
+Aşağıdaki özel durum da `const` ile tanımlanan değer değiştirilebilir, object veya array gibi komplex atamalardaki değişikliği algılayamaz. Örneğin:
 
 ```js
 {
@@ -147,14 +128,6 @@ Constants are not a restriction on the value itself, but on the variable's assig
 	a = 42;					// TypeError!
 }
 ```
-
-The `a` variable doesn't actually hold a constant array; rather, it holds a constant reference to the array. The array itself is freely mutable.
-
-**Warning:** Assigning an object or array as a constant means that value will not be able to be garbage collected until that constant's lexical scope goes away, as the reference to the value can never be unset. That may be desirable, but be careful if it's not your intent!
-
-Essentially, `const` declarations enforce what we've stylistically signaled with our code for years, where we declared a variable name of all uppercase letters and assigned it some literal value that we took care never to change. There's no enforcement on a `var` assignment, but there is now with a `const` assignment, which can help you catch unintended changes.
-
-`const` *can* be used with variable declarations of `for`, `for..in`, and `for..of` loops (see "`for..of` Loops"). However, an error will be thrown if there's any attempt to reassign, such as the typical `i++` clause of a `for` loop.
 
 #### `const` Or Not
 
