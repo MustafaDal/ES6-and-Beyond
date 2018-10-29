@@ -77,6 +77,13 @@ if (!Object.is) {
 		return v1 === v2;
 	};
 }
+
+for (let i = 0; i < 5; i++) {
+  setTimeout(() => {
+    console.log(`${i}: i`)
+  }, 1000 * i)
+}
+
 ```
 
 **Not:** En dışdaki `if` koşuluna dikkat ediniz, bu önemli bir detaydır. Zaten bu özellik var ise bu tanımlama gerçleşmeyecektir, sadece `Object.is(..)` olmadığı durumlarda `if` içerisindeki tanımlama yapılacağı için eski tarayıcılarda bu özelliği kullanmamızı sağlayacaktır. 
